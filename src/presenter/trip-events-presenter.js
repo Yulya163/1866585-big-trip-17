@@ -18,6 +18,5 @@ export default class TripEventsPresenter {
     render(new TripPointView(), this.tripPointListComponent.getElement());
     render(new TripPointView(), this.tripPointListComponent.getElement());
     render(new TripPointView(), this.tripPointListComponent.getElement());
-  }
-
+  };
 }

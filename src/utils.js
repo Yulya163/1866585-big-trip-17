@@ -15,7 +15,7 @@ const humanizePointDueDateAndTime = (dueDate) => dayjs(dueDate).format('DD/MM/YY
 
 const humanizePointDurationTime = (startDate, endDate) => {
 
-  var duration = require('dayjs/plugin/duration')
+  const duration = require('dayjs/plugin/duration')
   dayjs.extend(duration);
 
   let durationTime = dayjs(endDate).diff(startDate);

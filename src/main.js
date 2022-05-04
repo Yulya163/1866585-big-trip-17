@@ -16,9 +16,9 @@ const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
 
-const tripEventsPresenter = new TripEventsPresenter();
+const tripEventsPresenter = new TripEventsPresenter(siteTripEventsElement, pointsModel, offersModel, destinationsModel);
 
 render(new MenuView(), siteTripMainElement, 'afterbegin');
 render(new FiltersView(), siteTripFiltersElement);
 
-tripEventsPresenter.init(siteTripEventsElement, pointsModel, offersModel, destinationsModel);
+tripEventsPresenter.init();

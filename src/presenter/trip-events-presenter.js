@@ -2,6 +2,7 @@ import SortingView from '../view/sorting-view.js';
 import TripPointListView from '../view/trip-point-list-view.js';
 import TripPointView from '../view/trip-point-view.js';
 import FormView from '../view/form-view.js';
+import noPointsView from '../view/no-points-view.js';
 import {render} from '../render.js';
 
 export default class TripEventsPresenter {
@@ -11,42 +12,36 @@ export default class TripEventsPresenter {
   #offersModel = null;
   #destinationsModel = null;
 
-  #tripPointListComponent = new TripPointListView();
+  #tripPointsListComponent = new TripPointListView();
 
   #tripPoints = [];
   #allOffers = [];
   #allDestinations = [];
 
-  init = (tripContainer, pointsModel, offersModel, destinationsModel) => {
+  constructor(tripContainer, pointsModel, offersModel, destinationsModel,) {
     this.#tripContainer = tripContainer;
-
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+  }
 
+  init = () => {
     this.#tripPoints = [...this.#pointsModel.points];
     this.#allOffers = [...this.#offersModel.offers];
     this.#allDestinations = [...this.#destinationsModel.destinations];
 
-    render(new SortingView(), this.#tripContainer);
-    render(this.#tripPointListComponent, this.#tripContainer);
-
-    for (let i = 0; i < this.#tripPoints.length; i++) {
-      this.#renderTripPoint(this.#tripPoints[i], this.#allOffers, this.#allDestinations);
-    }
+    this.#renderTripPointsList();
   };
 
   #renderTripPoint = (point, offers, destinations) => {
     const tripPointComponent = new TripPointView(point, offers);
     const tripPointEditComponent = new FormView(point, offers, destinations);
 
-    console.log(this.#tripPointListComponent.element);
-
     const replaceCardToForm = () => {
-      this.#tripPointListComponent.element.replaceChild(tripPointEditComponent.element, tripPointComponent.element);
+      this.#tripPointsListComponent.element.replaceChild(tripPointEditComponent.element, tripPointComponent.element);
     };
     const replaceFormToCard = () => {
-      this.#tripPointListComponent.element.replaceChild(tripPointComponent.element, tripPointEditComponent.element);
+      this.#tripPointsListComponent.element.replaceChild(tripPointComponent.element, tripPointEditComponent.element);
     };
     const onEscKeyDown = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
@@ -68,6 +63,19 @@ export default class TripEventsPresenter {
       replaceFormToCard();
     });
 
-    render(tripPointComponent, this.#tripPointListComponent.element);
+    render(tripPointComponent, this.#tripPointsListComponent.element);
+  }
+
+  #renderTripPointsList = () => {
+    if (this.#tripPoints.length === 0) {
+      render(new noPointsView(), this.#tripContainer);
+      return;
+    }
+    render(new SortingView(), this.#tripContainer);
+    render(this.#tripPointsListComponent, this.#tripContainer);
+
+    for (let i = 0; i < this.#tripPoints.length; i++) {
+      this.#renderTripPoint(this.#tripPoints[i], this.#allOffers, this.#allDestinations);
+    }
   }
 }

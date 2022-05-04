@@ -86,22 +86,24 @@ const createTripItemTemplate = (point, allOffers = []) => {
 };
 
 export default class TripPointView {
+  #element = null;
+
   constructor (point, allOffers) {
     this.point = point;
     this.allOffers = allOffers;
   }
-  getTemplate() {
+  get template() {
     return createTripItemTemplate(this.point, this.allOffers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

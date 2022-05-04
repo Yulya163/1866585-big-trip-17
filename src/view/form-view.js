@@ -191,23 +191,26 @@ const createFormTemplate = (point = {}, allOffers, allDestinations) => {
 };
 
 export default class FormView {
+  #element = null;
+
   constructor(point, allOffers, allDestinations) {
     this.point = point;
     this.allOffers = allOffers;
     this.allDestinations = allDestinations;
   }
-  getTemplate() {
+
+  get template() {
     return createFormTemplate(this.point, this.allOffers, this.allDestinations);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

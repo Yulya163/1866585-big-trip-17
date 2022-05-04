@@ -43,8 +43,8 @@ const generateCity = () => {
 export const generatePoint = () => {
   const point = {
     'base_price': getRandomInteger(5, 500),
-    'date_from': `2022-05-02T02:16:54.401Z`,
-    'date_to': `2022-05-02T03:17:54.401Z`,
+    'date_from': `2022-05-0${getRandomInteger(1, 2)}T0${getRandomInteger(1, 3)}:16:54.401Z`,
+    'date_to': `2022-05-02T03:30:54.401Z`,
     'destination': generateCity(),
     'id': '0',
     'is_favorite': getRandomFavoriteStatus(),

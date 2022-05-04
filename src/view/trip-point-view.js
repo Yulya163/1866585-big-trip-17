@@ -1,35 +1,26 @@
 import {createElement} from '../render.js';
 import {humanizePointDueTime, humanizePointDueDate, humanizePointDurationTime} from '../utils.js';
 
-const renderSelectedOffers = (allOffers, offersId) => {
+const renderSelectedOffers = (point, offers) => {
+  const pointTypeOffer = offers.find((offer) => offer.type === point.type);
 
-  let selectedOffers = [];
-  let available = '';
-
-  for (const offerId of offersId) {
-    const offer = allOffers.filter(el => el.id === offerId);
-    selectedOffers.push(...offer);
-  }
-
-  for (const offer of selectedOffers) {
-    available += `<li class="event__offer">
+  return pointTypeOffer.offers.map((offer) => {
+    return point.offers.includes(offer.id) ?
+    `<li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
       +€&nbsp;
       <span class="event__offer-price">${offer.price}</span>
-    </li>`
-  }
-
-  return available;
+    </li>` :
+    '';
+  }).join('');
 }
 
-const createSelectedOffersTemplate = (allOffers, offersId) => (
-  `${offersId && offersId !== []
-  ? `<h4 class="visually-hidden">Offers:</h4>
-    <ul class="event__selected-offers">
-      ${renderSelectedOffers(allOffers, offersId)}
-    </ul>`
-  : null}`
-)
+
+const createSelectedOffersTemplate = (point, offers) => {
+  return `<ul class="event__selected-offers">
+    ${renderSelectedOffers(point, offers)}
+  </ul>`
+}
 
 const createTripItemTemplate = (point, allOffers = []) => {
   const {
@@ -58,7 +49,7 @@ const createTripItemTemplate = (point, allOffers = []) => {
   const favoriteClassName = isFavorite
       ? 'event__favorite-btn--active'
       : '';
-  const selectedOffersTemplate = createSelectedOffersTemplate(allOffers, offers.offers);
+  const selectedOffersTemplate = createSelectedOffersTemplate(point, allOffers);
 
   return (
     `<li class="trip-events__item">
@@ -67,7 +58,7 @@ const createTripItemTemplate = (point, allOffers = []) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${destination.name}</h3>
+        <h3 class="event__title">${type} ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="2019-03-18T10:30">${dateStart}</time>
@@ -79,8 +70,7 @@ const createTripItemTemplate = (point, allOffers = []) => {
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
-        ${offers.offers ? `${selectedOffersTemplate}` : ''}
-
+        ${selectedOffersTemplate}
         <button class="event__favorite-btn ${favoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">

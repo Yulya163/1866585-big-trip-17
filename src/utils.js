@@ -18,19 +18,19 @@ const humanizePointDurationTime = (startDate, endDate) => {
   const duration = require('dayjs/plugin/duration')
   dayjs.extend(duration);
 
-  let durationTime = dayjs(endDate).diff(startDate);
-  let durationTimeInHour = dayjs(endDate).diff(startDate, 'hour');
+  const durationTime = dayjs(endDate).diff(startDate);
+  const durationTimeInHour = dayjs(endDate).diff(startDate, 'hour');
 
   if (durationTimeInHour < 1) {
     return dayjs.duration(durationTime).format('mm[M]')
   }
-  if (durationTimeInHour >= 1 && durationTime < 24) {
-    dayjs.duration(durationTime).format('HH[H] mm[M]')
+  if (durationTimeInHour >= 1 && durationTimeInHour < 24) {
+    return dayjs.duration(durationTime).format('HH[H] mm[M]')
   }
   if (durationTimeInHour >= 24) {
     return dayjs.duration(durationTime).format('DD[D] HH[H] mm[M]')
   }
-  return null;
+  return '';
 }
 
 export {getRandomInteger, humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime};

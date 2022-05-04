@@ -4,23 +4,15 @@ import {humanizePointDueTime, humanizePointDueDate, humanizePointDurationTime} f
 const renderSelectedOffers = (point, offers) => {
   const pointTypeOffer = offers.find((offer) => offer.type === point.type);
 
-  return pointTypeOffer.offers.map((offer) => {
-    return point.offers.includes(offer.id) ?
+  return pointTypeOffer.offers.map((offer) => point.offers.includes(offer.id) ?
     `<li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
       +€&nbsp;
       <span class="event__offer-price">${offer.price}</span>
-    </li>` :
-    '';
-  }).join('');
-}
+    </li>` :  '').join('');
+};
 
-
-const createSelectedOffersTemplate = (point, offers) => {
-  return `<ul class="event__selected-offers">
-    ${renderSelectedOffers(point, offers)}
-  </ul>`
-}
+const createSelectedOffersTemplate = (point, offers) => `<ul class="event__selected-offers">${renderSelectedOffers(point, offers)}</ul>`;
 
 const createTripItemTemplate = (point, allOffers = []) => {
   const {
@@ -29,26 +21,25 @@ const createTripItemTemplate = (point, allOffers = []) => {
     dateTo,
     destination,
     isFavorite = false,
-    offers,
     type
   } = point;
 
   const dateStart = dateFrom !== null
-      ? humanizePointDueTime(dateFrom)
-      : '';
+    ? humanizePointDueTime(dateFrom)
+    : '';
   const dateEnd = dateTo !== null
-      ? humanizePointDueTime(dateTo)
-      : '';
+    ? humanizePointDueTime(dateTo)
+    : '';
   const date = dateFrom !== null
-      ? humanizePointDueDate(dateFrom)
-      : '';
+    ? humanizePointDueDate(dateFrom)
+    : '';
   const duration = dateFrom && dateTo !== null
-      ? humanizePointDurationTime(dateFrom, dateTo)
-      : '';
+    ? humanizePointDurationTime(dateFrom, dateTo)
+    : '';
 
   const favoriteClassName = isFavorite
-      ? 'event__favorite-btn--active'
-      : '';
+    ? 'event__favorite-btn--active'
+    : '';
   const selectedOffersTemplate = createSelectedOffersTemplate(point, allOffers);
 
   return (
@@ -92,6 +83,7 @@ export default class TripPointView {
     this.point = point;
     this.allOffers = allOffers;
   }
+
   get template() {
     return createTripItemTemplate(this.point, this.allOffers);
   }

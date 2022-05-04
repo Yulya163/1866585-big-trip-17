@@ -64,7 +64,7 @@ export default class TripEventsPresenter {
     });
 
     render(tripPointComponent, this.#tripPointsListComponent.element);
-  }
+  };
 
   #renderTripPointsList = () => {
     if (this.#tripPoints.length === 0) {
@@ -77,5 +77,5 @@ export default class TripEventsPresenter {
     for (let i = 0; i < this.#tripPoints.length; i++) {
       this.#renderTripPoint(this.#tripPoints[i], this.#allOffers, this.#allDestinations);
     }
-  }
+  };
 }

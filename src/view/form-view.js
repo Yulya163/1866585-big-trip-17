@@ -5,7 +5,7 @@ const renderAvailableOffers = (point, offers) => {
   const pointTypeOffer = offers.find((offer) => offer.type === point.type);
 
   return pointTypeOffer.offers.map((offer) => {
-    const checked = point.offers.includes(offer.id) ? `checked` : ``;
+    const checked = point.offers.includes(offer.id) ? 'checked' : '';
 
     return `<div class='event__offer-selector'>
       <input class='event__offer-checkbox  visually-hidden' id='event-offer-luggage-1' type='checkbox' name='event-offer-luggage' ${checked}>
@@ -14,30 +14,27 @@ const renderAvailableOffers = (point, offers) => {
         &plus;&euro;&nbsp;
         <span class='event__offer-price'>${offer.price}</span>
       </label>
-    </div>`
+    </div>`;
   }).join('');
-}
+};
 
 const createAvailableOffersTemplate = (point, offers) => {
   const pointTypeOffer = offers.find((offer) => offer.type === point.type);
 
   return pointTypeOffer.offers !== [] ?
-  `<section class='event__section  event__section--offers'>
-    <h3 class='event__section-title  event__section-title--offers'>Offers</h3>
-    <div class='event__available-offers'>
-      ${renderAvailableOffers(point, offers)}
-    </div>
-  </section>` :
-  ``
-}
+    `<section class='event__section  event__section--offers'>
+      <h3 class='event__section-title  event__section-title--offers'>Offers</h3>
+      <div class='event__available-offers'>
+        ${renderAvailableOffers(point, offers)}
+      </div>
+    </section>` : '';
+};
 
 const renderPhotos = (point, destinations) => {
   const pointCityDestination = destinations.find((destination) => destination.name === point.destination);
 
-  return pointCityDestination.pictures.map((picture) => {
-    return `<img class="event__photo" src=${picture.src} alt=${picture.description}>`
-  }).join('');
-}
+  return pointCityDestination.pictures.map((picture) => `<img class="event__photo" src=${picture.src} alt=${picture.description}>`).join('');
+};
 
 const createDestinationTemplate = (point, destinations) => {
   const pointCityDestination = destinations.find((destination) => destination.name === point.destination);
@@ -57,9 +54,8 @@ const createDestinationTemplate = (point, destinations) => {
         </div>
       </div>
     </section>` :
-    ``
-
-}
+    '';
+};
 
 const createFormTemplate = (point = {}, allOffers, allDestinations) => {
   const {
@@ -67,7 +63,6 @@ const createFormTemplate = (point = {}, allOffers, allDestinations) => {
     dateFrom = null,
     dateTo = null,
     destination  = 'Chamonix',
-    offers = [],
     type = 'taxi',
   } = point;
 
@@ -75,11 +70,11 @@ const createFormTemplate = (point = {}, allOffers, allDestinations) => {
   const destinationTemplate = createDestinationTemplate(point, allDestinations);
 
   const dateStart = dateFrom !== null
-      ? humanizePointDueDateAndTime(dateFrom)
-      : '';
+    ? humanizePointDueDateAndTime(dateFrom)
+    : '';
   const dateEnd = dateTo !== null
-      ? humanizePointDueDateAndTime(dateTo)
-      : '';
+    ? humanizePointDueDateAndTime(dateTo)
+    : '';
 
   return  (
     `<li class='trip-events__item'>
@@ -173,10 +168,7 @@ const createFormTemplate = (point = {}, allOffers, allDestinations) => {
           </div>
 
           <button class='event__save-btn  btn  btn--blue' type='submit'>Save</button>
-          ${point ?
-            `<button class='event__reset-btn' type='reset'>Delete</button>` :
-            `<button class='event__reset-btn' type='reset'>Cancel</button>`
-          }
+          ${point ? '<button class="event__reset-btn" type="reset">Delete</button>' : '<button class="event__reset-btn" type="reset">Cancel</button>'}
           <button class='event__rollup-btn' type='button'>
             <span class='visually-hidden'>Open event</span>
           </button>
@@ -187,7 +179,7 @@ const createFormTemplate = (point = {}, allOffers, allDestinations) => {
         </section>
       </form>
     </li>`
-  )
+  );
 };
 
 export default class FormView {

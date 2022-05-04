@@ -30,10 +30,44 @@ export default class TripEventsPresenter {
 
     render(new SortingView(), this.#tripContainer);
     render(this.#tripPointListComponent, this.#tripContainer);
-    render(new FormView(this.#tripPoints[0], this.#allOffers, this.#allDestinations), this.#tripPointListComponent.element, 'afterbegin');
 
-    for (let i = 1; i < this.#tripPoints.length; i++) {
-      render(new TripPointView(this.#tripPoints[i], this.#allOffers), this.#tripPointListComponent.element);
+    for (let i = 0; i < this.#tripPoints.length; i++) {
+      this.#renderTripPoint(this.#tripPoints[i], this.#allOffers, this.#allDestinations);
     }
   };
+
+  #renderTripPoint = (point, offers, destinations) => {
+    const tripPointComponent = new TripPointView(point, offers);
+    const tripPointEditComponent = new FormView(point, offers, destinations);
+
+    console.log(this.#tripPointListComponent.element);
+
+    const replaceCardToForm = () => {
+      this.#tripPointListComponent.element.replaceChild(tripPointEditComponent.element, tripPointComponent.element);
+    };
+    const replaceFormToCard = () => {
+      this.#tripPointListComponent.element.replaceChild(tripPointComponent.element, tripPointEditComponent.element);
+    };
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        replaceFormToCard();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+    tripPointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceCardToForm();
+      document.addEventListener('keydown', onEscKeyDown);
+    });
+    tripPointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToCard();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+    tripPointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceFormToCard();
+    });
+
+    render(tripPointComponent, this.#tripPointListComponent.element);
+  }
 }

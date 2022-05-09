@@ -1,7 +1,7 @@
-import {generateOffers} from '../mock/offers.js';
+import {allOffers} from '../main.js';
 
 export default class OffersModel {
-  #allOffers = generateOffers();
+  #allOffers = allOffers;
 
   get offers() {
     return this.#allOffers;

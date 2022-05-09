@@ -46,11 +46,6 @@ const createDestinationTemplate = (point, destinations) => {
       <div class="event__photos-container">
         <div class="event__photos-tape">
           ${renderPhotos(point, destinations)}
-
-          <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
         </div>
       </div>
     </section>` :

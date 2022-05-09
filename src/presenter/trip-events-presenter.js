@@ -4,6 +4,7 @@ import TripPointView from '../view/trip-point-view.js';
 import FormView from '../view/form-view.js';
 import noPointsView from '../view/no-points-view.js';
 import {render} from '../render.js';
+import {isEscapePressed} from '../utils.js';
 
 export default class TripEventsPresenter {
   #tripContainer = null;
@@ -23,15 +24,16 @@ export default class TripEventsPresenter {
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+    this.init();
   }
 
-  init = () => {
+  init() {
     this.#tripPoints = [...this.#pointsModel.points];
     this.#allOffers = [...this.#offersModel.offers];
     this.#allDestinations = [...this.#destinationsModel.destinations];
 
     this.#renderTripPointsList();
-  };
+  }
 
   #renderTripPoint = (point, offers, destinations) => {
     const tripPointComponent = new TripPointView(point, offers);
@@ -44,7 +46,7 @@ export default class TripEventsPresenter {
       this.#tripPointsListComponent.element.replaceChild(tripPointComponent.element, tripPointEditComponent.element);
     };
     const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
+      if (isEscapePressed) {
         evt.preventDefault();
         replaceFormToCard();
         document.removeEventListener('keydown', onEscKeyDown);
@@ -61,8 +63,8 @@ export default class TripEventsPresenter {
     });
     tripPointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       replaceFormToCard();
+      document.removeEventListener('keydown', onEscKeyDown);
     });
-
     render(tripPointComponent, this.#tripPointsListComponent.element);
   };
 
@@ -74,8 +76,8 @@ export default class TripEventsPresenter {
     render(new SortingView(), this.#tripContainer);
     render(this.#tripPointsListComponent, this.#tripContainer);
 
-    for (let i = 0; i < this.#tripPoints.length; i++) {
-      this.#renderTripPoint(this.#tripPoints[i], this.#allOffers, this.#allDestinations);
-    }
+    this.#tripPoints.forEach((tripPoint) => {
+      this.#renderTripPoint(tripPoint, this.#allOffers, this.#allDestinations);
+    });
   };
 }

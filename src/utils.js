@@ -32,4 +32,6 @@ const humanizePointDurationTime = (startDate, endDate) => {
   return '';
 };
 
-export {getRandomInteger, humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime};
+const isEscapePressed = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export {getRandomInteger, humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime, isEscapePressed};

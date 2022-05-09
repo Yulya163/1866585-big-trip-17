@@ -1,7 +1,7 @@
-import {generateDestinations} from '../mock/destinations.js';
+import {destinations} from '../main.js';
 
 export default class DestinationsModel {
-  #destinations = generateDestinations();
+  #destinations = destinations;
 
   get destinations() {
     return this.#destinations;

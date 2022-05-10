@@ -1,5 +1,13 @@
-import {createElement} from '../render.js';
-import {humanizePointDueDateAndTime} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {humanizePointDueDateAndTime} from '../utils/point.js';
+
+const BLANK_POINT = {
+  basePrice: null,
+  dateFrom: null,
+  dateTo: null,
+  destination: 'Chamonix',
+  type: 'taxi',
+};
 
 const renderAvailableOffers = (point, offers) => {
   const pointTypeOffer = offers.find((offer) => offer.type === point.type);
@@ -177,27 +185,39 @@ const createFormTemplate = (point = {}, allOffers, allDestinations) => {
   );
 };
 
-export default class FormView {
-  #element = null;
+export default class FormView extends AbstractView {
+  #point = null;
+  #allOffers = null;
+  #allDestinations = null;
 
-  constructor(point, allOffers, allDestinations) {
-    this.point = point;
-    this.allOffers = allOffers;
-    this.allDestinations = allDestinations;
+  constructor(point = BLANK_POINT, allOffers, allDestinations) {
+    super();
+    this.#point = point;
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
   }
 
   get template() {
-    return createFormTemplate(this.point, this.allOffers, this.allDestinations);
+    return createFormTemplate(this.#point, this.#allOffers, this.#allDestinations);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  setFormClickHandler = (callback) => {
+    this._callback.formClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formClickHandler);
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
+
+  #formClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formClick();
+  };
 }

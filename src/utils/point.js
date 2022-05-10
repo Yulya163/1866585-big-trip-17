@@ -3,13 +3,6 @@ import duration from 'dayjs/plugin/duration';
 
 dayjs.extend(duration);
 
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
 const humanizePointDueDate = (dueDate) => dayjs(dueDate).format('MMM D');
 
 const humanizePointDueTime = (dueDate) => dayjs(dueDate).format('HH:mm');
@@ -32,6 +25,4 @@ const humanizePointDurationTime = (startDate, endDate) => {
   return '';
 };
 
-const isEscapePressed = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
-
-export {getRandomInteger, humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime, isEscapePressed};
+export {humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime};

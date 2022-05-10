@@ -1,10 +1,10 @@
+import {render, replace} from '../framework/render.js';
 import SortingView from '../view/sorting-view.js';
 import TripPointListView from '../view/trip-point-list-view.js';
 import TripPointView from '../view/trip-point-view.js';
 import FormView from '../view/form-view.js';
-import noPointsView from '../view/no-points-view.js';
-import {render} from '../render.js';
-import {isEscapePressed} from '../utils.js';
+import NoPointsView from '../view/no-points-view.js';
+import {isEscapePressed} from '../utils/common.js';
 
 export default class TripEventsPresenter {
   #tripContainer = null;
@@ -40,10 +40,10 @@ export default class TripEventsPresenter {
     const tripPointEditComponent = new FormView(point, offers, destinations);
 
     const replaceCardToForm = () => {
-      this.#tripPointsListComponent.element.replaceChild(tripPointEditComponent.element, tripPointComponent.element);
+      replace(tripPointEditComponent, tripPointComponent);
     };
     const replaceFormToCard = () => {
-      this.#tripPointsListComponent.element.replaceChild(tripPointComponent.element, tripPointEditComponent.element);
+      replace(tripPointComponent, tripPointEditComponent);
     };
     const onEscKeyDown = (evt) => {
       if (isEscapePressed) {
@@ -52,25 +52,28 @@ export default class TripEventsPresenter {
         document.removeEventListener('keydown', onEscKeyDown);
       }
     };
-    tripPointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+
+    tripPointComponent.setEditClickHandler(() => {
       replaceCardToForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
-    tripPointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
+
+    tripPointEditComponent.setFormSubmitHandler(() => {
       replaceFormToCard();
       document.removeEventListener('keydown', onEscKeyDown);
     });
-    tripPointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+
+    tripPointEditComponent.setFormClickHandler(() => {
       replaceFormToCard();
       document.removeEventListener('keydown', onEscKeyDown);
     });
+
     render(tripPointComponent, this.#tripPointsListComponent.element);
   };
 
   #renderTripPointsList = () => {
     if (this.#tripPoints.length === 0) {
-      render(new noPointsView(), this.#tripContainer);
+      render(new NoPointsView(), this.#tripContainer);
       return;
     }
     render(new SortingView(), this.#tripContainer);

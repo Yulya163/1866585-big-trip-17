@@ -46,7 +46,7 @@ export default class TripEventsPresenter {
       replace(tripPointComponent, tripPointEditComponent);
     };
     const onEscKeyDown = (evt) => {
-      if (isEscapePressed) {
+      if (isEscapePressed(evt)) {
         evt.preventDefault();
         replaceFormToCard();
         document.removeEventListener('keydown', onEscKeyDown);

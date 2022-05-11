@@ -1,7 +1,13 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isToday from 'dayjs/plugin/isToday';
 
 dayjs.extend(duration);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isToday);
 
 const humanizePointDueDate = (dueDate) => dayjs(dueDate).format('MMM D');
 
@@ -25,4 +31,8 @@ const humanizePointDurationTime = (startDate, endDate) => {
   return '';
 };
 
-export {humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime};
+const isPointFuture = (startDate) => startDate && dayjs(startDate).isSameOrAfter(dayjs(), 'D');
+
+const isPointPast = (endDate) => endDate && dayjs(endDate).isSameOrBefore(dayjs(), 'D') && !dayjs(endDate).isToday();
+
+export {humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime, isPointFuture, isPointPast};

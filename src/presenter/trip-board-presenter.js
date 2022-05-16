@@ -3,8 +3,8 @@ import TripBoardView from '../view/trip-board-view.js';
 import SortingView from '../view/sorting-view.js';
 import TripPointListView from '../view/trip-point-list-view.js';
 import NoPointsView from '../view/no-points-view.js';
-
 import TripPointPresenter from './trip-point-presenter.js';
+import {updateItem} from '../utils/common.js';
 
 export default class TripBoardPresenter {
   #tripContainer = null;
@@ -21,6 +21,7 @@ export default class TripBoardPresenter {
   #tripPoints = [];
   #allOffers = [];
   #allDestinations = [];
+  #tripPointPresenter = new Map();
 
   constructor(tripContainer, pointsModel, offersModel, destinationsModel,) {
     this.#tripContainer = tripContainer;
@@ -30,13 +31,22 @@ export default class TripBoardPresenter {
     this.init();
   }
 
-  init() {
+  init = () => {
     this.#tripPoints = [...this.#pointsModel.points];
     this.#allOffers = [...this.#offersModel.offers];
     this.#allDestinations = [...this.#destinationsModel.destinations];
 
     this.#renderTripBoard();
-  }
+  };
+
+  #handleModeChange = () => {
+    this.#tripPointPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#tripPointPresenter.get(updatedPoint.id).init(updatedPoint, this.#allOffers, this.#allDestinations);
+  };
 
   #renderSort = () => {
     render(this.#sortComponent, this.#tripBoardComponent.element, RenderPosition.AFTERBEGIN);
@@ -47,15 +57,21 @@ export default class TripBoardPresenter {
   };
 
   #renderTripPoint = (point, offers, destinations) => {
-    const tripPointPresenter = new TripPointPresenter(this.#tripPointsListComponent.element);
+    const tripPointPresenter = new TripPointPresenter(this.#tripPointsListComponent.element, this.#handlePointChange, this.#handleModeChange);
     tripPointPresenter.init(point, offers, destinations);
+    this.#tripPointPresenter.set(point.id, tripPointPresenter);
   };
 
   #renderTripPoints = () => {
     this.#tripPoints.forEach((tripPoint) => {
       this.#renderTripPoint(tripPoint, this.#allOffers, this.#allDestinations);
     });
-  }
+  };
+
+  #clearTripPointsList = () => {
+    this.#tripPointPresenter.forEach((presenter) => presenter.destroy());
+    this.#tripPointPresenter.clear();
+  };
 
   #renderTripPointsList = () => {
     render(this.#tripPointsListComponent, this.#tripBoardComponent.element);

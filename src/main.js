@@ -2,7 +2,7 @@ import MenuView from './view/menu-view.js';
 import FiltersView from './view/filters-view.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import {render} from './framework/render.js';
-import TripEventsPresenter from './presenter/trip-events-presenter.js';
+import TripBoardPresenter from './presenter/trip-board-presenter.js';
 import PointsModel from './model/points-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
@@ -20,7 +20,7 @@ const sitePageHeaderElement = document.querySelector('.page-header');
 const siteTripMainElement = sitePageHeaderElement.querySelector('.trip-main');
 const siteTripFiltersElement = sitePageHeaderElement.querySelector('.trip-controls__filters');
 
-const siteTripEventsElement = document.querySelector('.trip-events');
+const siteTripEventsContainerElement = document.querySelector('main .page-body__container');
 
 const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
@@ -32,4 +32,4 @@ render(new MenuView(), siteTripMainElement, 'afterbegin');
 render(new FiltersView(filters), siteTripFiltersElement);
 render(new NewPointButtonView(), siteTripMainElement);
 
-new TripEventsPresenter(siteTripEventsElement, pointsModel, offersModel, destinationsModel);
+new TripBoardPresenter(siteTripEventsContainerElement, pointsModel, offersModel, destinationsModel);

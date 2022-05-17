@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractView from '../framework/view/abstract-view';
 
 const createNewMenuTemplate = () => (
   `<section class="trip-main__trip-info  trip-info">

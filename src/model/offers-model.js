@@ -1,4 +1,4 @@
-import {allOffers} from '../main.js';
+import {allOffers} from '../main';
 
 export default class OffersModel {
   #allOffers = allOffers;

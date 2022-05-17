@@ -1,5 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import {humanizePointDueTime, humanizePointDueDate, humanizePointDurationTime} from '../utils/point.js';
+import AbstractView from '../framework/view/abstract-view';
+import {humanizePointDueTime, humanizePointDueDate, humanizePointDurationTime} from '../utils/point';
 
 const renderSelectedOffers = (point, offers) => {
   const pointTypeOffer = offers.find((offer) => offer.type === point.type);

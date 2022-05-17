@@ -1,4 +1,4 @@
-import {destinations} from '../main.js';
+import {destinations} from '../main';
 
 export default class DestinationsModel {
   #destinations = destinations;

@@ -1,7 +1,7 @@
-import {render, replace, remove} from '../framework/render.js';
-import TripPointView from '../view/trip-point-view.js';
-import FormView from '../view/form-view.js';
-import {isEscapePressed} from '../utils/common.js';
+import {render, replace, remove} from '../framework/render';
+import TripPointView from '../view/trip-point-view';
+import FormView from '../view/form-view';
+import {isEscapePressed} from '../utils/common';
 
 const Mode = {
   DEFAULT: 'DEFAULT',

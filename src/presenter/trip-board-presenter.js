@@ -1,10 +1,12 @@
-import {render, RenderPosition} from '../framework/render.js';
-import TripBoardView from '../view/trip-board-view.js';
-import SortingView from '../view/sorting-view.js';
-import TripPointListView from '../view/trip-point-list-view.js';
-import NoPointsView from '../view/no-points-view.js';
-import TripPointPresenter from './trip-point-presenter.js';
-import {updateItem} from '../utils/common.js';
+import {render, RenderPosition} from '../framework/render';
+import TripBoardView from '../view/trip-board-view';
+import SortingView from '../view/sorting-view';
+import TripPointListView from '../view/trip-point-list-view';
+import NoPointsView from '../view/no-points-view';
+import TripPointPresenter from './trip-point-presenter';
+import {updateItem} from '../utils/common';
+import {sortDayUp, sortTimeDown, sortPriceDown} from '../utils/point';
+import {SortType} from '../consts';
 
 export default class TripBoardPresenter {
   #tripContainer = null;
@@ -22,6 +24,8 @@ export default class TripBoardPresenter {
   #allOffers = [];
   #allDestinations = [];
   #tripPointPresenter = new Map();
+  #currentSortType = SortType.DEFAULT;
+  #sourcedTripPoints = [];
 
   constructor(tripContainer, pointsModel, offersModel, destinationsModel,) {
     this.#tripContainer = tripContainer;
@@ -32,9 +36,11 @@ export default class TripBoardPresenter {
   }
 
   init = () => {
-    this.#tripPoints = [...this.#pointsModel.points];
+    this.#tripPoints = [...this.#pointsModel.points].sort(sortDayUp);
     this.#allOffers = [...this.#offersModel.offers];
     this.#allDestinations = [...this.#destinationsModel.destinations];
+
+    this.#sourcedTripPoints = [...this.#pointsModel.points].sort(sortDayUp);
 
     this.#renderTripBoard();
   };
@@ -45,11 +51,38 @@ export default class TripBoardPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedPoint);
     this.#tripPointPresenter.get(updatedPoint.id).init(updatedPoint, this.#allOffers, this.#allDestinations);
+  };
+
+  #sortPoints = (sortType) => {
+    switch (sortType) {
+      case SortType.TIME_DOWN:
+        this.#tripPoints.sort(sortTimeDown);
+        break;
+      case SortType.PRICE_DOWN:
+        this.#tripPoints.sort(sortPriceDown);
+        break;
+      default:
+        this.#tripPoints = [...this.#sourcedTripPoints];
+    }
+
+    this.#currentSortType = sortType;
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#sortPoints(sortType);
+    this.#clearTripPointsList();
+    this.#renderTripPointsList();
   };
 
   #renderSort = () => {
     render(this.#sortComponent, this.#tripBoardComponent.element, RenderPosition.AFTERBEGIN);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+
   };
 
   #renderNoPoints = () => {

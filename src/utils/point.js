@@ -35,4 +35,21 @@ const isPointFuture = (startDate) => startDate && dayjs(startDate).isSameOrAfter
 
 const isPointPast = (endDate) => endDate && dayjs(endDate).isSameOrBefore(dayjs(), 'D') && !dayjs(endDate).isToday();
 
-export {humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime, isPointFuture, isPointPast};
+const getWeightForStartDate = (dateA, dateB) => dateA - dateB;
+
+const getWeightForTimeDown = (timeA, timeB) => timeB - timeA;
+
+const getWeightForPriceDown = (priceA, priceB) => priceB - priceA;
+
+const sortDayUp = (pointA, pointB) => getWeightForStartDate(dayjs(pointA.dateFrom), dayjs(pointB.dateFrom));
+
+const sortTimeDown = (pointA, pointB) => {
+  const durationTimePointA = dayjs(pointA.dateTo).diff(pointA.dateFrom);
+  const durationTimePointB = dayjs(pointB.dateTo).diff(pointB.dateFrom);
+
+  return getWeightForTimeDown(durationTimePointA, durationTimePointB);
+};
+
+const sortPriceDown = (pointA, pointB) => getWeightForPriceDown(pointA.basePrice, pointB.basePrice);
+
+export {humanizePointDueDate, humanizePointDueTime, humanizePointDurationTime, humanizePointDueDateAndTime, isPointFuture, isPointPast, sortTimeDown, sortPriceDown, sortDayUp};

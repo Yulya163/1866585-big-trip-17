@@ -1,4 +1,4 @@
-import {points} from '../main.js';
+import {points} from '../main';
 
 export default class PointsModel {
   #points = points;

@@ -10,7 +10,7 @@ import DestinationsModel from './model/destinations-model.js';
 import {generateOffers} from './mock/offers.js';
 import {generatePoint} from './mock/point.js';
 import {generateDestinations} from './mock/destinations.js';
-import {generateFilter} from './mock/filter.js';
+import {generateFilter} from './utils/filter.js';
 
 export const allOffers = generateOffers();
 export const points = Array.from({length: 20}, generatePoint);

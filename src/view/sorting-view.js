@@ -40,13 +40,12 @@ export default class SortingView extends AbstractView {
     this.element.addEventListener('click', this.#sortTypeChangeHandler);
   };
 
+
   #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'LABEL') {
+    if (!evt.target.classList.contains('trip-sort__btn')) {
       return;
     }
 
-    evt.preventDefault();
     this._callback.sortTypeChange(evt.target.dataset.sortType);
-    evt.target.parentNode.querySelector('input').checked = 'true';
   };
 }

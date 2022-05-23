@@ -1,3 +1,15 @@
+const PointType = {
+  TAXI: 'taxi',
+  BUS: 'bus',
+  TRAIN: 'train',
+  SHIP: 'ship',
+  DRIVE: 'drive',
+  FLIGHT: 'flight',
+  CHECKIN: 'check-in',
+  SIGHTSEEING: 'sightseeing',
+  RESTAURANT: 'restaurant',
+};
+
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -10,4 +22,4 @@ const SortType = {
   PRICE_DOWN: 'price-down',
 };
 
-export {FilterType, SortType};
+export {PointType, FilterType, SortType};

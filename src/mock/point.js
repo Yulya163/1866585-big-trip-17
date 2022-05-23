@@ -49,7 +49,7 @@ export const generatePoint = () => {
     'date_to': `2022-05-${getRandomInteger(17, 20)}T03:${getRandomInteger(17, 55)}:54.401Z`,
     'destination': generateCity(),
     'is_favorite': getRandomFavoriteStatus(),
-    'offers': [1,2],
+    'offers': [1, 2],
     'type': generatePointType(),
   };
   return transformPoint(point);

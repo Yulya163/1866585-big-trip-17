@@ -68,6 +68,7 @@ export default class TripPointPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#tripPointEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   };
@@ -88,6 +89,7 @@ export default class TripPointPresenter {
   #escKeyDownHandler = (evt) => {
     if (isEscapePressed(evt)) {
       evt.preventDefault();
+      this.#tripPointEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   };
@@ -107,5 +109,6 @@ export default class TripPointPresenter {
 
   #handleFormClick = () => {
     this.#replaceFormToCard();
+    //this.#tripPointEditComponent.reset(this.#point);
   };
 }

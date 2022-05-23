@@ -74,7 +74,7 @@ const renderAvailableOffers = (checkedType, allOffers, checkedOffers) => {
 const createAvailableOffersTemplate = (checkedType, allOffers, checkedOffers) => {
   const pointTypeOffer = allOffers.find((offer) => offer.type === checkedType);
 
-  return pointTypeOffer.offers.length !== 0 ?
+  return pointTypeOffer.offers.length ?
     `<section class='event__section  event__section--offers'>
       <h3 class='event__section-title  event__section-title--offers'>Offers</h3>
       <div class='event__available-offers'>
@@ -92,7 +92,7 @@ const renderPhotos = (allDestinations, checkedDestination) => {
 const createDestinationTemplate = (allDestinations, checkedDestination) => {
   const pointCityDestination = allDestinations.find((destination) => destination.name === checkedDestination);
 
-  return pointCityDestination.description !== '' ?
+  return pointCityDestination && pointCityDestination.description !== '' ?
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${pointCityDestination.description}</p>
@@ -145,7 +145,7 @@ const createFormTemplate = (data, allOffers, allDestinations) => {
           </div>
 
           <button class='event__save-btn  btn  btn--blue' type='submit'>Save</button>
-          ${data ? '<button class="event__reset-btn" type="reset">Delete</button>' : '<button class="event__reset-btn" type="reset">Cancel</button>'}
+          <button class="event__reset-btn" type="reset">${data ? 'Delete' : 'Cancel'}</button>
           <button class='event__rollup-btn' type='button'>
             <span class='visually-hidden'>Open event</span>
           </button>

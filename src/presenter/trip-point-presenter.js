@@ -96,6 +96,7 @@ export default class TripPointPresenter {
 
   #handleEditClick = () => {
     this.#replaceCardToForm();
+    this.#tripPointEditComponent.reset(this.#point);
   };
 
   #handleFavoriteClick = () => {
@@ -109,6 +110,5 @@ export default class TripPointPresenter {
 
   #handleFormClick = () => {
     this.#replaceFormToCard();
-    //this.#tripPointEditComponent.reset(this.#point);
   };
 }

@@ -1,6 +1,9 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {humanizePointDueDateAndTime} from '../utils/point';
 import {PointType} from '../consts.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
   basePrice: null,
@@ -157,24 +160,35 @@ const createFormTemplate = (data, allOffers, allDestinations) => {
 };
 
 export default class FormView extends AbstractStatefulView {
-  #point = null;
   #allOffers = null;
   #allDestinations = null;
 
+  #datepicker = null;
+
   constructor(point = BLANK_POINT, allOffers, allDestinations) {
     super();
-    this.#point = point;
     this._state = FormView.parsePointToState(point);
 
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
 
     this.#setInnerHandlers();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   }
 
   get template() {
     return createFormTemplate(this._state, this.#allOffers, this.#allDestinations);
   }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
+  };
 
   reset = (point) => {
     this.updateElement(
@@ -184,6 +198,8 @@ export default class FormView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setFormClickHandler(this._callback.formClick);
   };
@@ -228,6 +244,18 @@ export default class FormView extends AbstractStatefulView {
     });
   };
 
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
@@ -246,6 +274,31 @@ export default class FormView extends AbstractStatefulView {
   #formClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.formClick();
+  };
+
+  #setDateFromPicker = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler,
+      },
+    );
+  };
+
+  #setDateToPicker = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#dateToChangeHandler,
+      },
+    );
   };
 
   #setInnerHandlers = () => {

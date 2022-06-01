@@ -1,3 +1,4 @@
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {humanizePointDueDateAndTime} from '../utils/point';
 import {PointType} from '../consts.js';
@@ -6,11 +7,14 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
-  basePrice: null,
+  basePrice: '',
   dateFrom: null,
   dateTo: null,
-  destination: 'Chamonix',
-  type: 'taxi',
+  destination: 'Samara',
+  offers: [],
+  type: 'flight',
+  isFavorite: false,
+  isStatusCreate: true,
 };
 
 const renderPointTypes = (types, checkedType) => Object.values(types).map((type) => {
@@ -47,7 +51,7 @@ const createAvailableDestinationsTemplate = (type, destination, allDestinations)
     <label class='event__label  event__type-output' for='event-destination-1'>
       ${type}
     </label>
-    <input class='event__input  event__input--destination' id='event-destination-1' type='text' name='event-destination' value=${destination} list='destination-list-1'>
+    <input class='event__input  event__input--destination' id='event-destination-1' type='text' name='event-destination' list='destination-list-1' value=${he.encode(destination)}>
     <datalist id='destination-list-1'>
       ${renderAvailableDestinations(allDestinations)}
     </datalist>
@@ -89,24 +93,31 @@ const renderPhotos = (allDestinations, checkedDestination) => {
   return pointCityDestination.pictures.map((picture) => `<img class="event__photo" src=${picture.src} alt=${picture.description}>`).join('');
 };
 
+const createPhotosTemplate = (allDestinations, checkedDestination) => {
+  const pointCityDestination = allDestinations.find((destination) => destination.name === checkedDestination);
+
+  return pointCityDestination.pictures.length ?
+    `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${renderPhotos(allDestinations, checkedDestination)}
+      </div>
+    </div>` : '';
+};
+
 const createDestinationTemplate = (allDestinations, checkedDestination) => {
   const pointCityDestination = allDestinations.find((destination) => destination.name === checkedDestination);
 
-  return pointCityDestination && pointCityDestination.description !== '' ?
+  return pointCityDestination && pointCityDestination.description !== '' || pointCityDestination.pictures.length !== 0 ?
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${pointCityDestination.description}</p>
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${renderPhotos(allDestinations, checkedDestination)}
-        </div>
-      </div>
+      ${createPhotosTemplate(allDestinations, checkedDestination)}
     </section>` :
     '';
 };
 
-const createFormTemplate = (data, allOffers, allDestinations) => {
-  const {dateFrom, dateTo, checkedType, checkedDestination, checkedOffers, newPrice} = data;
+const createFormTemplate = (data = {}, allOffers, allDestinations) => {
+  const {dateFrom, dateTo, isStatusCreate, checkedType, checkedDestination, checkedOffers, newPrice} = data;
 
   const pointTypesTemplate = createPointTypesTemplate(checkedType);
   const availableDestinationsTemplate = createAvailableDestinationsTemplate(checkedType, checkedDestination, allDestinations);
@@ -145,10 +156,10 @@ const createFormTemplate = (data, allOffers, allDestinations) => {
           </div>
 
           <button class='event__save-btn  btn  btn--blue' type='submit'>Save</button>
-          <button class="event__reset-btn" type="reset">${data ? 'Delete' : 'Cancel'}</button>
-          <button class='event__rollup-btn' type='button'>
+          <button class="event__reset-btn" type="reset">${isStatusCreate ? 'Cancel' : 'Delete'}</button>
+          ${!isStatusCreate ? `<button class='event__rollup-btn' type='button'>
             <span class='visually-hidden'>Open event</span>
-          </button>
+          </button>` : ''}
         </header>
         <section class='event__details'>
           ${offersTemplate}
@@ -165,8 +176,9 @@ export default class FormView extends AbstractStatefulView {
 
   #datepicker = null;
 
-  constructor(point = BLANK_POINT, allOffers, allDestinations) {
+  constructor(allOffers, allDestinations, point = BLANK_POINT) {
     super();
+
     this._state = FormView.parsePointToState(point);
 
     this.#allOffers = allOffers;
@@ -202,6 +214,7 @@ export default class FormView extends AbstractStatefulView {
     this.#setDateToPicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setFormClickHandler(this._callback.formClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   };
 
   #pointTypeClickHandler = (evt) => {
@@ -217,9 +230,11 @@ export default class FormView extends AbstractStatefulView {
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    this.updateElement({
-      checkedDestination: evt.target.value,
-    });
+    if (this.#allDestinations.some((destination) => destination.name === evt.target.value)) {
+      this.updateElement({
+        checkedDestination: evt.target.value,
+      });
+    }
   };
 
   #offersToggleHandler = (evt) => {
@@ -259,6 +274,11 @@ export default class FormView extends AbstractStatefulView {
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   };
 
   setFormClickHandler = (callback) => {
@@ -314,6 +334,11 @@ export default class FormView extends AbstractStatefulView {
       .addEventListener('input', this.#basePriceInputHandler);
   };
 
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(FormView.parseStateToPoint(this._state));
+  };
+
   static parsePointToState = (point) => ({...point,
     checkedType: point.type,
     checkedDestination: point.destination,
@@ -337,6 +362,9 @@ export default class FormView extends AbstractStatefulView {
     delete point.checkedDestination;
     delete point.checkedOffers;
     delete point.newPrice;
+    if (point.isStatusCreate) {
+      delete point.isStatusCreate;
+    }
 
     return point;
   };

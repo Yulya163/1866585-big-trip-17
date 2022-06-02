@@ -2,6 +2,8 @@ import {render, replace, remove} from '../framework/render';
 import TripPointView from '../view/trip-point-view';
 import FormView from '../view/form-view';
 import {isEscapePressed} from '../utils/common';
+import {UserAction, UpdateType} from '../consts.js';
+import {isPointFuture, isPointPast, isPointСurrent} from '../utils/point.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -35,13 +37,14 @@ export default class TripPointPresenter {
     const prevPointComponent = this.#tripPointComponent;
     const prevPointEditComponent = this.#tripPointEditComponent;
 
-    this.#tripPointComponent = new TripPointView(point, offers);
-    this.#tripPointEditComponent = new FormView(point, offers, destinations);
+    this.#tripPointComponent = new TripPointView(this.#point, this.#offers);
+    this.#tripPointEditComponent = new FormView(this.#offers, this.#destinations, this.#point);
 
     this.#tripPointComponent.setEditClickHandler(this.#handleEditClick);
     this.#tripPointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#tripPointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#tripPointEditComponent.setFormClickHandler(this.#handleFormClick);
+    this.#tripPointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#tripPointComponent, this.#tripPointsListContainer);
@@ -100,15 +103,36 @@ export default class TripPointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
   };
 
-  #handleFormSubmit = (point) => {
-    this.#changeData(point);
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      isPointFuture(this.#point.dateFrom) !== isPointFuture(update.dateFrom) ||
+      isPointPast(this.#point.dateTo) !== isPointPast(update.dateTo) ||
+      isPointСurrent(this.#point.dateFrom, this.#point.dateTo) !== isPointСurrent(update.dateFrom, update.dateTo);
+
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToCard();
   };
 
   #handleFormClick = () => {
     this.#replaceFormToCard();
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }

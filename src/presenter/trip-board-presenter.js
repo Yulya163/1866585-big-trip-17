@@ -3,6 +3,7 @@ import TripBoardView from '../view/trip-board-view';
 import SortingView from '../view/sorting-view';
 import TripPointListView from '../view/trip-point-list-view';
 import NoPointsView from '../view/no-points-view';
+import LoadingView from '../view/loading-view.js';
 import TripPointPresenter from './trip-point-presenter';
 import TripPointNewPresenter from './trip-point-new-presenter';
 import {sortDayUp, sortTimeDown, sortPriceDown} from '../utils/point';
@@ -19,6 +20,7 @@ export default class TripBoardPresenter {
 
   #tripBoardComponent = new TripBoardView();
   #tripPointsListComponent = new TripPointListView();
+  #loadingComponent = new LoadingView();
   #sortComponent = null;
   #noPointsComponent = null;
 
@@ -26,6 +28,7 @@ export default class TripBoardPresenter {
   #tripPointNewPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor(tripContainer, pointsModel, offersModel, destinationsModel, filterModel) {
     this.#tripContainer = tripContainer;
@@ -38,6 +41,8 @@ export default class TripBoardPresenter {
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+
+    this.init();
   }
 
   get points() {
@@ -107,6 +112,11 @@ export default class TripBoardPresenter {
         this.#clearTripBoard({resetSortType: true});
         this.#renderTripBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderTripBoard();
+        break;
       default:
         throw new Error('UpdateType does not exist');
     }
@@ -143,12 +153,17 @@ export default class TripBoardPresenter {
     points.forEach((tripPoint) => this.#renderTripPoint(tripPoint, this.offers, this.destinations));
   };
 
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#tripBoardComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
   #clearTripBoard = ({resetSortType = false} = {}) => {
     this.#tripPointNewPresenter.destroy();
     this.#tripPointPresenter.forEach((presenter) => presenter.destroy());
     this.#tripPointPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noPointsComponent) {
       remove(this.#noPointsComponent);
@@ -160,10 +175,15 @@ export default class TripBoardPresenter {
   };
 
   #renderTripBoard = () => {
+    render(this.#tripBoardComponent, this.#tripContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     const pointsCount = points.length;
-
-    render(this.#tripBoardComponent, this.#tripContainer);
 
     if (pointsCount === 0) {
       this.#renderNoPoints();

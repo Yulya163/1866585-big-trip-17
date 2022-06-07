@@ -7,14 +7,12 @@ import PointsModel from './model/points-model';
 import OffersModel from './model/offers-model';
 import DestinationsModel from './model/destinations-model';
 import FilterModel from './model/filter-model';
+import PointsApiService from './api-services/points-api-service';
+import OffersApiService from './api-services/offers-api-service';
+import DestinationsApiService from './api-services/destinations-api-service';
 
-import {generateOffers} from './mock/offers';
-import {generatePoint} from './mock/point';
-import {generateDestinations} from './mock/destinations';
-
-export const allOffers = generateOffers();
-export const points = Array.from({length: 10}, generatePoint);
-export const destinations = generateDestinations();
+const AUTHORIZATION = 'Basic Fghe15Jdw3FFnmxL';
+const END_POINT = 'https://17.ecmascript.pages.academy/big-trip';
 
 const sitePageHeaderElement = document.querySelector('.page-header');
 const siteTripMainElement = sitePageHeaderElement.querySelector('.trip-main');
@@ -22,9 +20,9 @@ const siteTripFiltersElement = sitePageHeaderElement.querySelector('.trip-contro
 
 const siteTripEventsContainerElement = document.querySelector('main .page-body__container');
 
-const pointsModel = new PointsModel();
-const offersModel = new OffersModel();
-const destinationsModel = new DestinationsModel();
+const pointsModel = new PointsModel(new PointsApiService(END_POINT, AUTHORIZATION));
+const offersModel = new OffersModel(new OffersApiService(END_POINT, AUTHORIZATION));
+const destinationsModel = new DestinationsModel(new DestinationsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 
 const tripBoardPresenter = new TripBoardPresenter(siteTripEventsContainerElement, pointsModel, offersModel, destinationsModel, filterModel);
@@ -41,8 +39,8 @@ const handleNewPointButtonClick = () => {
   newPointButtonComponent.element.disabled = true;
 };
 
-render(newPointButtonComponent, siteTripMainElement);
-newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
-
-filterPresenter.init();
-tripBoardPresenter.init();
+pointsModel.init()
+  .finally(() => {
+    render(newPointButtonComponent, siteTripMainElement);
+    newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
+  });

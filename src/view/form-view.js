@@ -10,7 +10,7 @@ const BLANK_POINT = {
   basePrice: '',
   dateFrom: null,
   dateTo: null,
-  destination: 'Samara',
+  destination: 'Moscow',
   offers: [],
   type: 'flight',
   isFavorite: false,
@@ -78,7 +78,7 @@ const renderAvailableOffers = (checkedType, allOffers, checkedOffers) => {
 const createAvailableOffersTemplate = (checkedType, allOffers, checkedOffers) => {
   const pointTypeOffer = allOffers.find((offer) => offer.type === checkedType);
 
-  return pointTypeOffer.offers.length ?
+  return pointTypeOffer && pointTypeOffer.offers.length ?
     `<section class='event__section  event__section--offers'>
       <h3 class='event__section-title  event__section-title--offers'>Offers</h3>
       <div class='event__available-offers'>
@@ -107,7 +107,7 @@ const createPhotosTemplate = (allDestinations, checkedDestination) => {
 const createDestinationTemplate = (allDestinations, checkedDestination) => {
   const pointCityDestination = allDestinations.find((destination) => destination.name === checkedDestination);
 
-  return pointCityDestination && pointCityDestination.description !== '' || pointCityDestination.pictures.length !== 0 ?
+  return pointCityDestination && pointCityDestination.description !== '' || pointCityDestination && pointCityDestination.pictures.length !== 0 ?
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${pointCityDestination.description}</p>
@@ -283,7 +283,10 @@ export default class FormView extends AbstractStatefulView {
 
   setFormClickHandler = (callback) => {
     this._callback.formClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formClickHandler);
+    const rollupBtn = this.element.querySelector('.event__rollup-btn');
+    if (rollupBtn) {
+      rollupBtn.addEventListener('click', this.#formClickHandler);
+    }
   };
 
   #formSubmitHandler = (evt) => {

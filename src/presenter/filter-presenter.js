@@ -17,28 +17,38 @@ export default class FilterPresenter {
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.init();
   }
 
   get filters() {
     const points = this.#pointsModel.points;
 
-    return [
-      {
-        type: FilterType.EVERYTHING,
-        name: 'everything',
-        count: filter[FilterType.EVERYTHING](points).length,
-      },
-      {
-        type: FilterType.FUTURE,
-        name: 'future',
-        count: filter[FilterType.FUTURE](points).length,
-      },
-      {
-        type: FilterType.PAST,
-        name: 'past',
-        count: filter[FilterType.PAST](points).length,
-      },
-    ];
+    return Object.entries(FilterType).map(
+      ([type, name]) => ({
+        type: FilterType[type],
+        name: name,
+        count: filter[FilterType[type]](points).length,
+      }),
+    );
+
+    // return [
+    //   {
+    //     type: FilterType.EVERYTHING,
+    //     name: 'everything',
+    //     count: filter[FilterType.EVERYTHING](points).length,
+    //   },
+    //   {
+    //     type: FilterType.FUTURE,
+    //     name: 'future',
+    //     count: filter[FilterType.FUTURE](points).length,
+    //   },
+    //   {
+    //     type: FilterType.PAST,
+    //     name: 'past',
+    //     count: filter[FilterType.PAST](points).length,
+    //   },
+    // ];
+
   }
 
   init = () => {

@@ -30,25 +30,6 @@ export default class FilterPresenter {
         count: filter[FilterType[type]](points).length,
       }),
     );
-
-    // return [
-    //   {
-    //     type: FilterType.EVERYTHING,
-    //     name: 'everything',
-    //     count: filter[FilterType.EVERYTHING](points).length,
-    //   },
-    //   {
-    //     type: FilterType.FUTURE,
-    //     name: 'future',
-    //     count: filter[FilterType.FUTURE](points).length,
-    //   },
-    //   {
-    //     type: FilterType.PAST,
-    //     name: 'past',
-    //     count: filter[FilterType.PAST](points).length,
-    //   },
-    // ];
-
   }
 
   init = () => {

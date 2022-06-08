@@ -26,7 +26,6 @@ const destinationsModel = new DestinationsModel(new DestinationsApiService(END_P
 const filterModel = new FilterModel();
 
 const tripBoardPresenter = new TripBoardPresenter(siteTripEventsContainerElement, pointsModel, offersModel, destinationsModel, filterModel);
-const filterPresenter = new FilterPresenter(siteTripFiltersElement, filterModel, pointsModel);
 const newPointButtonComponent = new NewPointButtonView();
 
 render(new MenuView(), siteTripMainElement, 'afterbegin');
@@ -39,6 +38,7 @@ const handleNewPointButtonClick = () => {
   newPointButtonComponent.element.disabled = true;
 };
 
+new FilterPresenter(siteTripFiltersElement, filterModel, pointsModel);
 pointsModel.init()
   .finally(() => {
     render(newPointButtonComponent, siteTripMainElement);

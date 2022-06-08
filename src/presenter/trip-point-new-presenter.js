@@ -1,6 +1,5 @@
 import {render, remove, RenderPosition} from '../framework/render';
 import FormView from '../view/form-view';
-import {nanoid} from 'nanoid';
 import {isEscapePressed} from '../utils/common';
 import {UserAction, UpdateType} from '../consts.js';
 
@@ -49,13 +48,31 @@ export default class TripPointNewPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
+  setSaving = () => {
+    this.#tripPointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#tripPointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#tripPointEditComponent.shake(resetFormState);
+  };
+
   #handleFormSubmit = (point) => {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...point},
+      point,
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {

@@ -1,13 +1,20 @@
 import {render, RenderPosition, remove} from '../framework/render';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import TripBoardView from '../view/trip-board-view';
 import SortingView from '../view/sorting-view';
 import TripPointListView from '../view/trip-point-list-view';
 import NoPointsView from '../view/no-points-view';
+import LoadingView from '../view/loading-view.js';
 import TripPointPresenter from './trip-point-presenter';
 import TripPointNewPresenter from './trip-point-new-presenter';
 import {sortDayUp, sortTimeDown, sortPriceDown} from '../utils/point';
 import {filter} from '../utils/filter.js';
 import {SortType, UpdateType, UserAction, FilterType} from '../consts';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class TripBoardPresenter {
   #tripContainer = null;
@@ -19,6 +26,7 @@ export default class TripBoardPresenter {
 
   #tripBoardComponent = new TripBoardView();
   #tripPointsListComponent = new TripPointListView();
+  #loadingComponent = new LoadingView();
   #sortComponent = null;
   #noPointsComponent = null;
 
@@ -26,6 +34,8 @@ export default class TripBoardPresenter {
   #tripPointNewPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(tripContainer, pointsModel, offersModel, destinationsModel, filterModel) {
     this.#tripContainer = tripContainer;
@@ -80,18 +90,37 @@ export default class TripBoardPresenter {
     this.#tripPointPresenter.forEach((presenter) => presenter.resetView());
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#tripPointPresenter.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#tripPointPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#tripPointNewPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#tripPointNewPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#tripPointPresenter.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#tripPointPresenter.get(update.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -105,6 +134,11 @@ export default class TripBoardPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearTripBoard({resetSortType: true});
+        this.#renderTripBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderTripBoard();
         break;
       default:
@@ -143,12 +177,17 @@ export default class TripBoardPresenter {
     points.forEach((tripPoint) => this.#renderTripPoint(tripPoint, this.offers, this.destinations));
   };
 
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#tripBoardComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
   #clearTripBoard = ({resetSortType = false} = {}) => {
     this.#tripPointNewPresenter.destroy();
     this.#tripPointPresenter.forEach((presenter) => presenter.destroy());
     this.#tripPointPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noPointsComponent) {
       remove(this.#noPointsComponent);
@@ -160,10 +199,15 @@ export default class TripBoardPresenter {
   };
 
   #renderTripBoard = () => {
+    render(this.#tripBoardComponent, this.#tripContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     const pointsCount = points.length;
-
-    render(this.#tripBoardComponent, this.#tripContainer);
 
     if (pointsCount === 0) {
       this.#renderNoPoints();

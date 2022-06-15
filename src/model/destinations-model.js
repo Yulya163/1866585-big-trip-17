@@ -4,7 +4,6 @@ export default class DestinationsModel {
 
   constructor(destinationsApiService) {
     this.#destinationsApiService = destinationsApiService;
-    this.init();
   }
 
   init = async () => {

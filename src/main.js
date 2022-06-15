@@ -1,7 +1,7 @@
-import MenuView from './view/menu-view';
 import NewPointButtonView from './view/new-point-button-view';
 import {render} from './framework/render';
 import TripBoardPresenter from './presenter/trip-board-presenter';
+import MenuPresenter from './presenter/menu-presenter';
 import FilterPresenter from './presenter/filter-presenter';
 import PointsModel from './model/points-model';
 import OffersModel from './model/offers-model';
@@ -22,25 +22,29 @@ const siteTripEventsContainerElement = document.querySelector('main .page-body__
 
 const pointsModel = new PointsModel(new PointsApiService(END_POINT, AUTHORIZATION));
 const offersModel = new OffersModel(new OffersApiService(END_POINT, AUTHORIZATION));
-const destinationsModel = new DestinationsModel(new DestinationsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
+const destinationsModel = new DestinationsModel(new DestinationsApiService(END_POINT, AUTHORIZATION));
 
-const tripBoardPresenter = new TripBoardPresenter(siteTripEventsContainerElement, pointsModel, offersModel, destinationsModel, filterModel);
-const newPointButtonComponent = new NewPointButtonView();
+offersModel.init().then(() => {
+  destinationsModel.init().then(() => {
+    const tripBoardPresenter = new TripBoardPresenter(siteTripEventsContainerElement, pointsModel, offersModel, destinationsModel, filterModel);
+    const newPointButtonComponent = new NewPointButtonView();
 
-render(new MenuView(), siteTripMainElement, 'afterbegin');
-const handleNewPointFormClose = () => {
-  newPointButtonComponent.element.disabled = false;
-};
+    const handleNewPointFormClose = () => {
+      newPointButtonComponent.element.disabled = false;
+    };
 
-const handleNewPointButtonClick = () => {
-  tripBoardPresenter.createPoint(handleNewPointFormClose);
-  newPointButtonComponent.element.disabled = true;
-};
+    const handleNewPointButtonClick = () => {
+      tripBoardPresenter.createPoint(handleNewPointFormClose);
+      newPointButtonComponent.element.disabled = true;
+    };
 
-new FilterPresenter(siteTripFiltersElement, filterModel, pointsModel);
-pointsModel.init()
-  .finally(() => {
-    render(newPointButtonComponent, siteTripMainElement);
-    newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
+    pointsModel.init()
+      .finally(() => {
+        render(newPointButtonComponent, siteTripMainElement);
+        newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
+        new MenuPresenter(siteTripMainElement, pointsModel, offersModel);
+        new FilterPresenter(siteTripFiltersElement, filterModel, pointsModel);
+      });
   });
+});

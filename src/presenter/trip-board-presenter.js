@@ -62,9 +62,9 @@ export default class TripBoardPresenter {
         return filteredPoints.sort(sortTimeDown);
       case SortType.PRICE_DOWN:
         return filteredPoints.sort(sortPriceDown);
+      default:
+        return filteredPoints;
     }
-
-    return filteredPoints;
   }
 
   get offers() {
@@ -118,6 +118,8 @@ export default class TripBoardPresenter {
           this.#tripPointPresenter.get(update.id).setAborting();
         }
         break;
+      default:
+        throw new Error('UserAction does not exist');
     }
 
     this.#uiBlocker.unblock();

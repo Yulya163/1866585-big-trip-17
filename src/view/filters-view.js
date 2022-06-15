@@ -54,6 +54,9 @@ export default class FiltersView extends AbstractView {
     if (!evt.target.classList.contains('trip-filters__filter-label')) {
       return;
     }
+    if (evt.target.parentNode.querySelector('.trip-filters__filter-input').disabled) {
+      return;
+    }
     this._callback.filterTypeChange(evt.target.parentNode.querySelector('.trip-filters__filter-input').value);
   };
 }

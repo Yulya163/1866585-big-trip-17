@@ -14,7 +14,17 @@ const renderSelectedOffers = (point, offers) => {
     '';
 };
 
-const createSelectedOffersTemplate = (point, offers) => `<ul class="event__selected-offers">${renderSelectedOffers(point, offers)}</ul>`;
+const createErrorLoadingOffersTemplate = () => (
+  `<p class="event__selected-offers" style="color: #ff5e5e; font-size: 14px;">
+    Дополнительные опции временно не доступны
+  </p>`
+);
+
+const createSelectedOffersTemplate = (point, offers) => (
+  offers.length !== 0 ?
+    `<ul class="event__selected-offers">${renderSelectedOffers(point, offers)}</ul>` :
+    `${createErrorLoadingOffersTemplate()}`
+);
 
 const createTripItemTemplate = (point, allOffers = []) => {
   const {

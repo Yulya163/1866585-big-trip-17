@@ -85,10 +85,20 @@ const renderAvailableOffers = (checkedType, allOffers, checkedOffers, isDisabled
   }).join('');
 };
 
+const createErrorLoadingOffersTemplate = () => (
+  `<section class='event__section  event__section--offers'>
+    <p class="event__selected-offers" style="color: #ff5e5e; font-size: 14px;">К сожалению, дополнительные опции временно не доступны</p>
+  </section>`
+);
+
 const createAvailableOffersTemplate = (checkedType, allOffers, checkedOffers, isDisabled) => {
   const pointTypeOffer = allOffers.find((offer) => offer.type === checkedType);
 
-  return pointTypeOffer && pointTypeOffer.offers.length ?
+  if (!pointTypeOffer) {
+    return `${createErrorLoadingOffersTemplate()}`;
+  }
+
+  return pointTypeOffer.offers.length ?
     `<section class='event__section  event__section--offers'>
       <h3 class='event__section-title  event__section-title--offers'>Offers</h3>
       <div class='event__available-offers'>
@@ -114,16 +124,27 @@ const createPhotosTemplate = (allDestinations, checkedDestination) => {
     </div>` : '';
 };
 
+const createErrorLoadingDestinationsTemplate = () => (
+  `<section class="event__section  event__section--destination">
+    <p class="event__destination-description" style="color: #ff5e5e; font-size: 14px;">
+      К сожалению, точки маршрута временно не доступны! Вы не можете выбрать или изменить новую точку маршрута, попробуйте позже.
+    </p>
+  </section>`
+);
+
 const createDestinationTemplate = (allDestinations, checkedDestination) => {
   const pointCityDestination = allDestinations.find((destination) => destination.name === checkedDestination);
 
-  return pointCityDestination && pointCityDestination.description !== '' || pointCityDestination && pointCityDestination.pictures.length !== 0 ?
+  if (!pointCityDestination) {
+    return `${createErrorLoadingDestinationsTemplate()}`;
+  }
+
+  return pointCityDestination.description !== '' || pointCityDestination.pictures.length !== 0 ?
     `<section class='event__section  event__section--destination'>
       <h3 class='event__section-title  event__section-title--destination'>Destination</h3>
       <p class='event__destination-description'>${pointCityDestination.description}</p>
       ${createPhotosTemplate(allDestinations, checkedDestination)}
-    </section>` :
-    '';
+    </section>` : '';
 };
 
 const createFormTemplate = (data = {}, allOffers, allDestinations) => {

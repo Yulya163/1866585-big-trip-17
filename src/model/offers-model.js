@@ -6,6 +6,10 @@ export default class OffersModel {
     this.#offersApiService = offersApiService;
   }
 
+  get offers() {
+    return this.#allOffers;
+  }
+
   init = async () => {
     try {
       this.#allOffers = await this.#offersApiService.offers;
@@ -13,8 +17,4 @@ export default class OffersModel {
       this.#allOffers = [];
     }
   };
-
-  get offers() {
-    return this.#allOffers;
-  }
 }

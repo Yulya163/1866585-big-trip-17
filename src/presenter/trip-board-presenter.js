@@ -202,6 +202,7 @@ export default class TripBoardPresenter {
 
   #renderTripBoard = () => {
     render(this.#tripBoardComponent, this.#tripContainer);
+    render(this.#tripPointsListComponent, this.#tripBoardComponent.element);
 
     if (this.#isLoading) {
       this.#renderLoading();
@@ -217,7 +218,6 @@ export default class TripBoardPresenter {
     }
 
     this.#renderSort();
-    render(this.#tripPointsListComponent, this.#tripBoardComponent.element);
     this.#renderTripPoints(this.points);
   };
 }

@@ -9,6 +9,11 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isToday);
 
+const HourLimit = {
+  LOWER_LIMIT: 1,
+  UPPER_LIMIT: 24,
+};
+
 const humanizePointDueDate = (dueDate) => dayjs(dueDate).format('MMM D');
 
 const humanizePointDueTime = (dueDate) => dayjs(dueDate).format('HH:mm');
@@ -19,13 +24,13 @@ const humanizePointDurationTime = (startDate, endDate) => {
   const durationTime = dayjs(endDate).diff(startDate);
   const durationTimeInHour = dayjs(endDate).diff(startDate, 'hour');
 
-  if (durationTimeInHour < 1) {
+  if (durationTimeInHour < HourLimit.LOWER_LIMIT) {
     return dayjs.duration(durationTime).format('mm[M]');
   }
-  if (durationTimeInHour >= 1 && durationTimeInHour < 24) {
+  if (durationTimeInHour >= HourLimit.LOWER_LIMIT && durationTimeInHour < HourLimit.UPPER_LIMIT) {
     return dayjs.duration(durationTime).format('HH[H] mm[M]');
   }
-  if (durationTimeInHour >= 24) {
+  if (durationTimeInHour >= HourLimit.UPPER_LIMIT) {
     return dayjs.duration(durationTime).format('DD[D] HH[H] mm[M]');
   }
   return '';
@@ -35,7 +40,7 @@ const isPointFuture = (startDate) => startDate && dayjs(startDate).isSameOrAfter
 
 const isPointPast = (endDate) => endDate && dayjs(endDate).isSameOrBefore(dayjs(), 'D') && !dayjs(endDate).isToday();
 
-const isPointСurrent = (startDate, endDate) => startDate && endDate && dayjs(startDate).isSameOrBefore(dayjs(), 'D') && !dayjs(startDate).isToday() && dayjs(endDate).isSameOrAfter(dayjs(), 'D');
+const isPointCurrent = (startDate, endDate) => startDate && endDate && dayjs(startDate).isSameOrBefore(dayjs(), 'D') && !dayjs(startDate).isToday() && dayjs(endDate).isSameOrAfter(dayjs(), 'D');
 
 const getWeightForStartDate = (dateA, dateB) => dateA - dateB;
 
@@ -61,7 +66,7 @@ export {
   humanizePointDueDateAndTime,
   isPointFuture,
   isPointPast,
-  isPointСurrent,
+  isPointCurrent,
   sortTimeDown,
   sortPriceDown,
   sortDayUp

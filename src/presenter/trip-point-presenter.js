@@ -3,7 +3,7 @@ import TripPointView from '../view/trip-point-view';
 import FormView from '../view/form-view';
 import {isEscapePressed} from '../utils/common';
 import {UserAction, UpdateType} from '../consts.js';
-import {isPointFuture, isPointPast, isPointСurrent} from '../utils/point.js';
+import {isPointFuture, isPointPast, isPointCurrent} from '../utils/point.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -150,7 +150,7 @@ export default class TripPointPresenter {
     const isMinorUpdate =
       isPointFuture(this.#point.dateFrom) !== isPointFuture(update.dateFrom) ||
       isPointPast(this.#point.dateTo) !== isPointPast(update.dateTo) ||
-      isPointСurrent(this.#point.dateFrom, this.#point.dateTo) !== isPointСurrent(update.dateFrom, update.dateTo);
+      isPointCurrent(this.#point.dateFrom, this.#point.dateTo) !== isPointCurrent(update.dateFrom, update.dateTo);
 
     this.#changeData(
       UserAction.UPDATE_POINT,

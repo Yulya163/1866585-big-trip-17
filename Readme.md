@@ -4,7 +4,7 @@
 
 - Студент: [Юлия Балакирева](https://up.htmlacademy.ru/ecmascript/17/user/1866585).
 - Наставник: `Евгений Фаллер`.
-- [DEMO]()
+- [DEMO](yulya163.github.io/1866585-big-trip-17)
 
 ### В проекте используется:
 

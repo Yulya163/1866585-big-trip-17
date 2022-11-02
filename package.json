@@ -2,6 +2,7 @@
   "name": "big-trip",
   "version": "17.0.0",
   "private": true,
+  "homepage": "https://Yulya163.github.io/1866585-big-trip-17",
   "description": "Проект «Большое путешествие» от HTML Academy",
   "browserslist": [
     "last 2 versions",
@@ -26,7 +27,9 @@
     "style-loader": "3.3.1",
     "webpack": "5.72.0",
     "webpack-cli": "4.9.2",
-    "webpack-dev-server": "4.8.1"
+    "webpack-dev-server": "4.8.1",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "engines": {
     "node": "16"
